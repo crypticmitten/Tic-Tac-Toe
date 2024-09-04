@@ -14,7 +14,7 @@ function gameBoard(){
         let column = parseInt(pos.slice(-1))-1;
 
         if(gameState[row][column] !== null){
-            alert("That Position is Occupied");
+            showAlert("Occupied");
             return;
         }
 
@@ -31,9 +31,9 @@ function gameBoard(){
                 showAlert(winner);
             }
             else{
-                showAlert(playerTurn+1);
+                showAlert(players[playerTurn].getName());
             }
-            reset();
+            reset()
         }
     }
 
@@ -72,7 +72,9 @@ function gameBoard(){
 
 function Player(symbol){
     const getSymbol = () => symbol;
-    return {getSymbol};
+    let name = prompt("Choose Your Name");
+    const getName = () => name;
+    return {getSymbol, getName};
 }
 
 const game = gameBoard();
@@ -91,8 +93,11 @@ function showAlert(winner) {
     if(winner=="Tie"){
         alertText.innerText = "Tie";
         alertBox.style.backgroundColor = "#e20f0f";
+    }else if(winner=="Occupied"){
+        alertText.innerText = "That Position is Occupied, Pick Again!"
+        alertBox.style.backgroundColor = "#e09111"
     }else{
-        alertText.innerText = 'Player ' + winner + ' is the winner';
+        alertText.innerText = winner + ' is the winner';
         alertBox.style.backgroundColor = "#4CAF50";
     }
     alertBox.style.display = 'block';
