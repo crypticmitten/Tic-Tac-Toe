@@ -8,42 +8,34 @@ function gameBoard(){
     let playerTurn = 0;
     let winner =  null;
 
-    const makeTurn = () => {
-        displayBoard();
-        let move = String(prompt(`Player ${playerTurn + 1}, Choose your next move!`));
-        let row = parseInt(move.slice(0,1))-1;
-        let column = parseInt(move.slice(-1))-1;
+    const makeTurn = (target) => {
+        pos = String(target.id);
+        let row = parseInt(pos.slice(0,1))-1;
+        let column = parseInt(pos.slice(-1))-1;
 
-        while(gameState[row][column] !== null){
-            move = String(prompt(`Player ${playerTurn + 1}, that position is taken. Choose again!`));
-            row = parseInt(move.slice(0,1))-1;
-            column = parseInt(move.slice(-1))-1;
+        if(gameState[row][column] !== null){
+            alert("That Position is Occupied");
+            return;
         }
 
         gameState[row][column] = players[playerTurn].getSymbol();
+        target.innerText = players[playerTurn].getSymbol();
 
 
         winner = checkWin();
         if (!winner){
             playerTurn = (playerTurn+1)%2;
-            makeTurn();
         }
         else{
             if (winner=="Tie"){
-                console.log(winner);
+                showAlert(winner);
             }
             else{
-                console.log(`Player ${playerTurn+1} is the winner`)
+                showAlert(playerTurn+1);
             }
-            displayBoard();
+            reset();
         }
     }
-    const displayBoard = () => {
-        console.log(gameState[0]);
-        console.log(gameState[1]);
-        console.log(gameState[2]);
-        console.log(' ');
-    };
 
     const checkWin = () => {
         for(i=0;i<3;i++){
@@ -66,7 +58,16 @@ function gameBoard(){
         return null;
     }
 
-    return {makeTurn,displayBoard};
+    const reset = () => {
+        gameState = [[null,null,null],[null,null,null],[null,null,null]];
+        playerTurn = 0;
+        winner = null;
+        buttons.forEach(btn => {
+            btn.innerText = '';
+        })
+    }
+
+    return {makeTurn};
 }
 
 function Player(symbol){
@@ -76,4 +77,28 @@ function Player(symbol){
 
 const game = gameBoard();
 
-game.makeTurn();
+let buttons = document.querySelectorAll('button');
+buttons.forEach(btn => {
+    btn.addEventListener("click", event => {
+        game.makeTurn(event.target);
+    })
+})
+//game.makeTurn();
+
+function showAlert(winner) {
+    const alertBox = document.getElementById('customAlert');
+    const alertText = document.querySelector("#customAlert p");
+    if(winner=="Tie"){
+        alertText.innerText = "Tie";
+        alertBox.style.backgroundColor = "#e20f0f";
+    }else{
+        alertText.innerText = 'Player ' + winner + ' is the winner';
+        alertBox.style.backgroundColor = "#4CAF50";
+    }
+    alertBox.style.display = 'block';
+}
+
+function closeAlert() {
+    const alertBox = document.getElementById('customAlert');
+    alertBox.style.display = 'none';
+}
